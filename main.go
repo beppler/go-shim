@@ -11,7 +11,13 @@ import (
 )
 
 func main() {
-	configFile := strings.TrimSuffix(os.Args[0], filepath.Ext(os.Args[0])) + ".ini"
+	executable, err := os.Executable()
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
+
+	configFile := strings.TrimSuffix(executable, filepath.Ext(executable)) + ".ini"
 
 	config, err := ini.ShadowLoad(configFile)
 	if err != nil {
