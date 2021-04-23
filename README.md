@@ -2,7 +2,7 @@
 
 Quickly add executables to your path.
 
-This project has been inspired on [shimexe](https://github.com/lukesampson/shimexe) by [Luke Sampson](https://github.com/lukesampson)
+This project has been inspired on [shimexe](https://github.com/lukesampson/shimexe) by [Luke Sampson](https://github.com/lukesampson), but implemented in [go](https://golang.org).
 
 ## Build from source
 
