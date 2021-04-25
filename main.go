@@ -31,6 +31,15 @@ func main() {
 		os.Exit(1)
 	}
 
+	if !filepath.IsAbs(cmdPath) {
+		directory, _ := filepath.Split(executable)
+		cmdPath, err = filepath.Abs(filepath.Join(directory, cmdPath))
+		if err != nil {
+			fmt.Println("Error:", err)
+			os.Exit(1)
+		}
+	}
+
 	var cmdArgs []string
 	if config.Section("").Key("args").Value() == "" {
 		cmdArgs = os.Args[1:]
