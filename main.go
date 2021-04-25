@@ -47,12 +47,31 @@ func main() {
 		cmdArgs = append(config.Section("").Key("args").ValueWithShadows(), os.Args[1:]...)
 	}
 
+	group, err := NewProcessGroup()
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
+	defer group.Dispose()
+
 	cmd := exec.Command(cmdPath, cmdArgs...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	if err := cmd.Run(); err != nil {
+	group.SetupCommand(cmd)
+
+	if err = cmd.Start(); err != nil {
+		fmt.Println("Error: command is not defined.")
+		os.Exit(1)
+	}
+
+	if err = group.AddProcess(cmd.Process); err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
+
+	if err = cmd.Wait(); err != nil {
 		if exit, ok := err.(*exec.ExitError); ok {
 			os.Exit(exit.ExitCode())
 		}
