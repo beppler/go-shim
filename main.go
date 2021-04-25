@@ -27,7 +27,7 @@ func main() {
 
 	cmdPath := strings.TrimSpace(config.Section("").Key("command").String())
 	if cmdPath == "" {
-		fmt.Println("Error: command is not defined.")
+		fmt.Printf("Error: command is not defined on file %s.\n", configFile)
 		os.Exit(1)
 	}
 
@@ -62,7 +62,7 @@ func main() {
 	group.SetupCommand(cmd)
 
 	if err = cmd.Start(); err != nil {
-		fmt.Println("Error: command is not defined.")
+		fmt.Println("Error:", err)
 		os.Exit(1)
 	}
 
