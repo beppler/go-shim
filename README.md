@@ -11,7 +11,7 @@ To build this project from sources you need [go](https://golang.org) compiler 1.
 Clone the repoistory and then run
 
 ```shell
-go build -ldflags="-s -w" -trimpath 
+go build -ldflags="-s -w" -trimpath
 ```
 
 ## To create shims
