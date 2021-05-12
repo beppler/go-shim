@@ -11,7 +11,7 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-func RunProcess(name string, args ...string) error {
+func RunProcess(name string, wait bool, args ...string) error {
 	cmd := exec.Command(name, args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
@@ -27,10 +27,12 @@ func RunProcess(name string, args ...string) error {
 		return fmt.Errorf("error starting process: %v", err)
 	}
 
-	group.AddProcess(cmd.Process)
+	if wait {
+		group.AddProcess(cmd.Process)
 
-	if err := cmd.Wait(); err != nil {
-		return fmt.Errorf("error waiting for the process: %v", err)
+		if err := cmd.Wait(); err != nil {
+			return fmt.Errorf("error waiting for the process: %v", err)
+		}
 	}
 
 	return nil

@@ -45,6 +45,15 @@ func main() {
 		}
 	}
 
+	wait := true
+	if config.Section("").HasKey("wait") {
+		wait, err = config.Section("").Key("wait").Bool()
+		if err != nil {
+			fmt.Println("error:", err)
+			os.Exit(1)
+		}
+	}
+
 	var cmdArgs []string
 	if config.Section("").Key("args").Value() == "" {
 		cmdArgs = os.Args[1:]
@@ -56,7 +65,7 @@ func main() {
 		fmt.Printf("executing: %s %s\n", cmdPath, strings.Join(cmdArgs, " "))
 	}
 
-	err = RunProcess(cmdPath, cmdArgs...)
+	err = RunProcess(cmdPath, wait, cmdArgs...)
 	if err != nil {
 		if isDebug {
 			fmt.Println("error:", err)
