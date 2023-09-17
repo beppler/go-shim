@@ -26,7 +26,7 @@ go build -ldflags="-s -w" -trimpath
 
 Follow the steps:
 
-* Copy the `go-shim.exe` to the name of the command you want to run, for example copy it to `go-env.exe`.
+* Copy the `go-shim` to the name of the command you want to run, for example copy it to `go-env`.
 
 * Create the configuration file with the same name of the executable, but with the `.ini` extension, for example `go-env.ini`.
 
@@ -34,7 +34,7 @@ Follow the steps:
 
   ```ini
   # example configuration for go-shim
-  command = C:\Program Files\Go\bin\go.exe
+  command = go
 
   # optional fixed args passed to command before the args passed to shim
   args = env
