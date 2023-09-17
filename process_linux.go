@@ -22,6 +22,8 @@ func RunProcess(name string, args []string, wait bool) error {
 			}
 			return fmt.Errorf("error running process: %w", err)
 		}
+
+		return nil
 	}
 
 	if err := cmd.Start(); err != nil {
