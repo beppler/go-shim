@@ -22,6 +22,7 @@ func main() {
 	if debugging {
 		command := os.Getenv("GO_SHIM_DEBUG_COMMAND")
 		if command != "" {
+			fmt.Fprintf(os.Stderr, "command replaced to: %s from: %s\n", command, executable)
 			executable = command
 		}
 	}
