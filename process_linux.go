@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"os/exec"
 	"syscall"
 )
 
-func RunProcess(name string, args ...string) error {
+func RunProcess(name string, args []string, wait bool) error {
 	cmd := exec.Command(name, args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
@@ -13,16 +15,17 @@ func RunProcess(name string, args ...string) error {
 
 	if wait {
 		cmd.SysProcAttr = &syscall.SysProcAttr{Pdeathsig: syscall.SIGKILL}
-	}
 
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("error starting process: %v", err)
-	}
-
-	if wait {
-		if err := cmd.Wait(); err != nil {
-			return fmt.Errorf("error waiting for the process: %v", err)
+		if err := cmd.Run(); err != nil {
+			if exit, ok := err.(*exec.ExitError); ok {
+				return exit
+			}
+			return fmt.Errorf("error running process: %w", err)
 		}
+	}
+
+	if err := cmd.Start(); err != nil {
+		return fmt.Errorf("error starting process: %w", err)
 	}
 
 	return nil

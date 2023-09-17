@@ -8,7 +8,15 @@ This project has been inspired on [shimexe](https://github.com/lukesampson/shime
 
 To build this project from sources you need [go](https://golang.org) compiler 1.16 or newer.
 
-Clone the repoistory and then run
+Clone this repoistory.
+
+On Linux run:
+
+```shell
+go build -ldflags="-s" -trimpath
+```
+
+On Windows run:
 
 ```shell
 go build -ldflags="-s -w" -trimpath
@@ -18,9 +26,9 @@ go build -ldflags="-s -w" -trimpath
 
 Follow the steps:
 
-* Copy the `go-shim.exe` to the name of the command you want to run, for example copy it to `go.exe`.
+* Copy the `go-shim.exe` to the name of the command you want to run, for example copy it to `go-env.exe`.
 
-* Create the configuration file with the same name of the executable, but with the `.ini` extension, for example `go.ini`.
+* Create the configuration file with the same name of the executable, but with the `.ini` extension, for example `go-env.ini`.
 
 * Inside the configuration file put the full path of the correct program to be executed on the key called `command` like on the example bellow.
 
@@ -30,6 +38,4 @@ Follow the steps:
 
   # optional fixed args passed to command before the args passed to shim
   args = env
-  args = CC
-  args = AR
   ```

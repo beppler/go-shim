@@ -11,25 +11,34 @@ import (
 )
 
 func main() {
-	isDebug := os.Getenv("GO_SHIM_DEBUG") == "1"
+	debugging := os.Getenv("GO_SHIM_DEBUG") == "1"
 
 	executable, err := os.Executable()
 	if err != nil {
-		fmt.Println("error:", err)
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
+	}
+
+	if debugging {
+		command := os.Getenv("GO_SHIM_DEBUG_COMMAND")
+		if command != "" {
+			executable = command
+		}
 	}
 
 	configFile := strings.TrimSuffix(executable, filepath.Ext(executable)) + ".ini"
 
 	config, err := ini.ShadowLoad(configFile)
 	if err != nil {
-		fmt.Println("error:", err)
+		if debugging {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		}
 		os.Exit(1)
 	}
 
 	cmdPath := strings.TrimSpace(config.Section("").Key("command").String())
 	if cmdPath == "" {
-		fmt.Printf("error: command is not defined on file %s.\n", configFile)
+		fmt.Fprintf(os.Stderr, "error: command is not defined on file %s.\n", configFile)
 		os.Exit(1)
 	}
 
@@ -39,7 +48,7 @@ func main() {
 			exeDir, _ := filepath.Split(executable)
 			cmdPath, err = filepath.Abs(filepath.Join(exeDir, cmdPath))
 			if err != nil {
-				fmt.Println("error:", err)
+				fmt.Fprintf(os.Stderr, "error: %v", err)
 				os.Exit(1)
 			}
 		}
@@ -49,7 +58,9 @@ func main() {
 	if config.Section("").HasKey("wait") {
 		wait, err = config.Section("").Key("wait").Bool()
 		if err != nil {
-			fmt.Println("error:", err)
+			if debugging {
+				fmt.Fprintf(os.Stderr, "error: can not determine the value of debug %s: %v", configFile, err)
+			}
 			os.Exit(1)
 		}
 	}
@@ -61,18 +72,25 @@ func main() {
 		cmdArgs = append(config.Section("").Key("args").ValueWithShadows(), os.Args[1:]...)
 	}
 
-	if isDebug {
-		fmt.Printf("executing: %s %s\n", cmdPath, strings.Join(cmdArgs, " "))
+	if debugging {
+		fmt.Fprintf(os.Stderr, "executing: %s %s\n", cmdPath, strings.Join(cmdArgs, " "))
 	}
 
-	err = RunProcess(cmdPath, wait, cmdArgs...)
+	code := 0
+
+	err = RunProcess(cmdPath, cmdArgs, wait)
 	if err != nil {
-		if isDebug {
-			fmt.Println("error:", err)
-		}
+		code = 1
 		if exit, ok := err.(*exec.ExitError); ok {
-			os.Exit(exit.ExitCode())
+			code = exit.ExitCode()
+		} else {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		}
-		os.Exit(1)
 	}
+
+	if wait && debugging {
+		fmt.Fprintf(os.Stderr, "exit code: %d", code)
+	}
+
+	os.Exit(code)
 }
