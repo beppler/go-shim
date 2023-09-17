@@ -12,7 +12,7 @@
             "program": "${workspaceFolder}",
             "env": {
                 "GO_SHIM_DEBUG": "1",
-                "GO_SHIM_DEBUG_COMMAND": "go-shim.exe"
+                "GO_SHIM_DEBUG_COMMAND": "go-shim"
             }
         }
     ]
